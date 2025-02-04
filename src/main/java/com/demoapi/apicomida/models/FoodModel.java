@@ -1,6 +1,5 @@
 package com.demoapi.apicomida.models;
 
-import com.demoapi.apicomida.util.Unit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -38,7 +37,7 @@ public class FoodModel {
     private Double quantity;
 
     @NotNull
-    private Unit unit;
+    private int unit;
 
     @PositiveOrZero
     private Double calories;

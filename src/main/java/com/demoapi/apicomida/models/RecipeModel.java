@@ -1,9 +1,9 @@
 package com.demoapi.apicomida.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,15 +15,14 @@ import java.util.List;
 public class RecipeModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
+    @NotBlank
+    private String name;
 
     @ManyToOne
-    @JoinColumn(name = "id_user")
-    private UserModel user;
-
-    private String name;
-    private String description;
-    private String instructions;
+    @JoinColumn(name = "id_user", nullable = false)
+    private UserModel idUser;
 
     @ManyToMany
     @JoinTable(
@@ -31,8 +30,27 @@ public class RecipeModel {
             joinColumns = @JoinColumn(name = "recipe_id"),
             inverseJoinColumns = @JoinColumn(name = "food_id")
     )
-    private List<FoodModel> ingredients = new ArrayList<>();
+    private List<FoodModel> ingredients;
+
+    private String description;
+
+    @PositiveOrZero
+    private Double calories;
+
+    @PositiveOrZero
+    private Double protein;
+
+    @PositiveOrZero
+    private Double carb;
+
+    @PositiveOrZero
+    private Double fat;
+
+    @PositiveOrZero
+    private Double sugar;
+
+    @PositiveOrZero
+    private Double sodium;
 
     public RecipeModel() {}
 }
-

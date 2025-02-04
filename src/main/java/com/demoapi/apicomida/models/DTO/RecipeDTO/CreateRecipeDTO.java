@@ -1,18 +1,19 @@
-package com.demoapi.apicomida.models.DTO;
+package com.demoapi.apicomida.models.DTO.RecipeDTO;
 
-import com.demoapi.apicomida.models.FoodModel;
-import com.demoapi.apicomida.models.UserModel;
+import com.demoapi.apicomida.models.DTO.FoodDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
 import java.util.List;
 
 @Data
 @Getter
 @Setter
 @Builder
-public class RecipeDTO {
+public class CreateRecipeDTO {
     @JsonProperty
     @NotBlank
     private String name;
@@ -28,4 +29,7 @@ public class RecipeDTO {
     @JsonProperty
     @NotEmpty
     private List<FoodDTO> ingredients;
+    @JsonProperty
+    @NotNull
+    private long idUser;
 }

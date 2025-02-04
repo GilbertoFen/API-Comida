@@ -22,20 +22,15 @@ public enum Exercise {
     public String getName(){
         return name;
     }
-    /*public String getLevel(int id) {
-
-        return Arrays.stream(Exercise.values()).filter(e -> e.getId() == id).findFirst().get().getName();
-    }*/
 
     public static String getLevel(int id) {
         return Arrays.stream(Exercise.values())
                 .filter(e -> e.getId() == id)
                 .findFirst()
-                .map(Exercise::getName) // Devuelve el nombre si lo encuentra
+                .map(Exercise::getName)
                 .orElseThrow(() -> new IllegalArgumentException("ID de ejercicio inválido: " + id));
     }
 
-    // Método estático para obtener una instancia de Exercise basada en el ID
     public static Exercise getById(int id) {
         return Arrays.stream(Exercise.values())
                 .filter(e -> e.getId() == id)

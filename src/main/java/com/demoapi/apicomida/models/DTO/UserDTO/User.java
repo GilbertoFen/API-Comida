@@ -20,6 +20,6 @@ public class User{
     @JsonProperty
     private float height;
     @JsonProperty
-    private String exerciseLevel;
+    private int exerciseLevel;
 
 }

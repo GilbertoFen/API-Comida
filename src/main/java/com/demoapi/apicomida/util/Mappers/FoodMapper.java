@@ -6,23 +6,33 @@ import com.demoapi.apicomida.models.FoodModel;
 public class FoodMapper {
     public static FoodModel toModel(FoodDTO foodDTO) {
         return FoodModel.builder()
+                .country(foodDTO.getCountry())
+                .category(foodDTO.getCategory())
                 .name(foodDTO.getName())
+                .quantity(foodDTO.getQuantity())
+                .unit(foodDTO.getUnit())
                 .calories(foodDTO.getCalories())
-                .sugar(foodDTO.getSugar())
                 .protein(foodDTO.getProtein())
-                .fat(foodDTO.getFat())
                 .carb(foodDTO.getCarb())
+                .fat(foodDTO.getFat())
+                .sugar(foodDTO.getSugar())
+                .sodium(foodDTO.getSodium())
                 .build();
     }
 
     public static FoodDTO toDTO(FoodModel foodModel) {
         return FoodDTO.builder()
+                .country(foodModel.getCountry())
+                .category(foodModel.getCategory())
                 .name(foodModel.getName())
+                .quantity(foodModel.getQuantity())
+                .unit(foodModel.getUnit())
                 .calories(foodModel.getCalories())
-                .sugar(foodModel.getSugar())
                 .protein(foodModel.getProtein())
-                .fat(foodModel.getFat())
                 .carb(foodModel.getCarb())
+                .fat(foodModel.getFat())
+                .sugar(foodModel.getSugar())
+                .sodium(foodModel.getSodium())
                 .build();
     }
 }

@@ -17,5 +17,5 @@ public class UserDTO {
         @JsonProperty
         private float height;
         @JsonProperty
-        private String exerciseLevel;
+        private int exerciseLevel;
 }

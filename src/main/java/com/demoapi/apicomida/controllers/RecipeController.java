@@ -1,8 +1,11 @@
 package com.demoapi.apicomida.controllers;
 
-import com.demoapi.apicomida.models.DTO.RecipeDTO;
+import com.demoapi.apicomida.models.DTO.RecipeDTO.CreateRecipeDTO;
+import com.demoapi.apicomida.models.DTO.RecipeDTO.RecipeDTO;
 import com.demoapi.apicomida.services.RecipeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -18,8 +21,9 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRecipe(@RequestBody RecipeDTO recipeDTO) {
-        return recipeService.createRecipe(recipeDTO);
+    public ResponseEntity<?> createRecipe(@RequestBody @Valid CreateRecipeDTO recipeCreateDTO) {
+        ResponseEntity<?> recipeDTO = recipeService.createRecipe(recipeCreateDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(recipeDTO);
     }
     @GetMapping
     public ResponseEntity<List<RecipeDTO>> getAllRecipes() {

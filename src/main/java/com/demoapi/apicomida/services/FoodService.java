@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class FoodService {
         this.foodRepository = foodRepository;
     }
 
-    public ResponseEntity<?> createFood(FoodDTO foodDTO) {
+    public ResponseEntity<?> createFood(@RequestBody FoodDTO foodDTO) {
         try {
             FoodModel foodModel = FoodMapper.toModel(foodDTO);
             foodRepository.save(foodModel);
@@ -52,7 +53,7 @@ public class FoodService {
         Optional<FoodModel> existingFood = foodRepository.findById(id);
         if (existingFood.isPresent()) {
             FoodModel updatedFood = FoodMapper.toModel(foodDTO);
-            updatedFood.setId(id); // Preserve ID
+            updatedFood.setId(id);
             foodRepository.save(updatedFood);
             return ResponseEntity.ok().build();
         }

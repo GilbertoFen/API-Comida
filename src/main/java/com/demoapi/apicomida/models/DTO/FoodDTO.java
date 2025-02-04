@@ -1,6 +1,5 @@
 package com.demoapi.apicomida.models.DTO;
 
-import com.demoapi.apicomida.util.Unit;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +12,9 @@ import lombok.*;
 @Setter
 @Builder
 public class FoodDTO {
+
+    @JsonProperty
+    private String country;
     @JsonProperty
     @NotBlank
     private String category;
@@ -28,7 +30,7 @@ public class FoodDTO {
 
     @JsonProperty
     @NotNull
-    private Unit unit;
+    private int unit;
 
     @JsonProperty
     @NotNull

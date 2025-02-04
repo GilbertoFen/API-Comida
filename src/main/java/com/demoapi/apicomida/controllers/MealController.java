@@ -26,14 +26,21 @@ public class MealController {
         return mealService.getMealById(id);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateMeal(@PathVariable long id, @RequestBody MealDTO mealDTO) {
-        return mealService.updateMeal(id, mealDTO);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMeal(@PathVariable long id) {
         return mealService.deleteMeal(id);
     }
+
+    /*
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateMeal(@PathVariable long id, @RequestBody MealDTO mealDTO) {
+        return mealService.updateMeal(id, mealDTO);
+    }*/
+
+    /*
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<MealDTO>> getMealsByUser(@PathVariable Long userId) {
+        return mealService.getMealsByUser(userId);
+    }*/
 
 }
