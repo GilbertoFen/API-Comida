@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,36 +30,37 @@ public class RecipeService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<?> createRecipe(CreateRecipeDTO createRecipeDTO) {
-        try {
-            Optional<UserModel> optionalUser = Optional.ofNullable(userRepository.findById(createRecipeDTO.getIdUser()));
-            if (optionalUser.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("User not found with id: " + createRecipeDTO.getIdUser());
-            }
-            UserModel user = optionalUser.get();
+    public ResponseEntity<?> createRecipe(CreateRecipeDTO recipeCreateDTO) {
 
-            RecipeModel recipeModel = RecipeMapper.toModel(createRecipeDTO);
-
-            List<FoodModel> ingredients = createRecipeDTO.getIngredients().stream()
-                    .map(ingredientDTO -> foodRepository.findByName(ingredientDTO.getName())
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                    "Ingredient not found: " + ingredientDTO.getName())))
-                    .collect(Collectors.toList());
-            recipeModel.setIngredients(ingredients);
-            recipeModel.setIdUser(user);
-            calculateRecipeNutrition(recipeModel);
-            recipeRepository.save(recipeModel);
-
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error creating recipe: " + e.getMessage());
+        Optional<UserModel> userOptional = userRepository.findById(recipeCreateDTO.getIdUser());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
+        UserModel user = userOptional.get();
+
+        List<FoodModel> ingredients = foodRepository.findAllById(recipeCreateDTO.getIngredientIds());
+        if (ingredients.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron los ingredientes");
+        }
+
+        RecipeModel recipeModel = RecipeMapper.toModel(recipeCreateDTO, ingredients);
+        recipeModel.setIdUser(user);
+
+        calculateRecipeNutrition(recipeModel);
+
+        recipeRepository.save(recipeModel);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(RecipeMapper.toDTO(recipeModel));
     }
 
+
+
+    public ResponseEntity<List<RecipeDTO>> getAllRecipes() {
+        List<RecipeDTO> recipes = recipeRepository.findAll().stream()
+                .map(RecipeMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(recipes);
+    }
 
     public void calculateRecipeNutrition(RecipeModel recipe) {
         double totalCalories = 0.0;
@@ -71,12 +71,14 @@ public class RecipeService {
         double totalSodium = 0.0;
 
         for (FoodModel ingredient : recipe.getIngredients()) {
-            totalCalories += ingredient.getCalories();
-            totalProtein += ingredient.getProtein() ;
-            totalCarb += ingredient.getCarb();
-            totalFat += ingredient.getFat() ;
-            totalSugar += ingredient.getSugar() ;
-            totalSodium += ingredient.getSodium() ;
+            double ingredientQuantity = ingredient.getQuantity();
+            double quantity = ingredientQuantity / 100;
+            totalCalories += ingredient.getCalories() * quantity;
+            totalProtein += ingredient.getProtein() * quantity;
+            totalCarb += ingredient.getCarb() * quantity;
+            totalFat += ingredient.getFat() * quantity;
+            totalSugar += ingredient.getSugar() * quantity;
+            totalSodium += ingredient.getSodium() * quantity;
         }
 
         recipe.setCalories(totalCalories);
@@ -87,12 +89,6 @@ public class RecipeService {
         recipe.setSodium(totalSodium);
     }
 
-    public List<RecipeDTO> getAllRecipes() {
-        List<RecipeModel> recipes = recipeRepository.findAll();
-        return recipes.stream()
-                .map(RecipeMapper::toDTO)
-                .collect(Collectors.toList());
-    }
 
     public ResponseEntity<RecipeDTO> getRecipeById(Long id) {
         Optional<RecipeModel> recipeModel = recipeRepository.findById(id);

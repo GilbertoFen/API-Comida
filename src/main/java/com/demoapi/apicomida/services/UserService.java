@@ -40,7 +40,7 @@ public class UserService {
     }
 
     public ResponseEntity<UserDTO> getUserById(long id) {
-        Optional<UserModel> userModelOptional = Optional.ofNullable(userRepository.findById(id));
+        Optional<UserModel> userModelOptional = userRepository.findById(id);
         return userModelOptional
                 .map(user -> ResponseEntity.ok(UserMapper.toUserDTO(user)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());

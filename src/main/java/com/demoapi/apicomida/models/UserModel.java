@@ -42,8 +42,6 @@ public class UserModel {
     @NotNull
     private int exerciseLevel;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MealModel> meals = new ArrayList<>();
 
     @OneToMany(mappedBy = "idUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeModel> recipes = new ArrayList<>();

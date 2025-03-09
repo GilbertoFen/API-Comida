@@ -4,6 +4,7 @@ import com.demoapi.apicomida.models.DTO.FoodDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import java.util.List;
 
@@ -30,4 +31,19 @@ public class RecipeDTO {
 
     @JsonProperty
     private Double calories;
+
+    @JsonProperty
+    private Double protein;
+
+    @JsonProperty
+    private Double carb;
+
+    @JsonProperty
+    private Double fat;
+
+    @JsonProperty
+    private Double sugar;
+
+    @JsonProperty
+    private Double sodium;
 }

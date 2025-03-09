@@ -1,7 +1,6 @@
 package com.demoapi.apicomida.util.Mappers;
 
 import com.demoapi.apicomida.models.DTO.MealDTO;
-import com.demoapi.apicomida.models.DTO.RecipeDTO.RecipeDTO;
 import com.demoapi.apicomida.models.MealModel;
 
 import java.util.stream.Collectors;

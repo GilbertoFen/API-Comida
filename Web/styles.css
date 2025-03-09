@@ -1,0 +1,19 @@
+body {
+    background-color: #f8f9fa;
+}
+h1 {
+    color: #343a40;
+}
+.btn-Y{
+    background-color: #ffdc07;
+}
+
+.btn-Y:hover{
+    background-color: #f8da54;
+}
+.container-Y{
+    padding: 15px;
+    background-color: #ffe4c8;
+    border-radius: 10px;
+}
+

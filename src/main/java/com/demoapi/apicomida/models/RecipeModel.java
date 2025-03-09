@@ -34,6 +34,8 @@ public class RecipeModel {
 
     private String description;
 
+    private String instructions;
+
     @PositiveOrZero
     private Double calories;
 
@@ -53,4 +55,5 @@ public class RecipeModel {
     private Double sodium;
 
     public RecipeModel() {}
+
 }

@@ -12,7 +12,8 @@ import lombok.*;
 @Setter
 @Builder
 public class FoodDTO {
-
+    @JsonProperty
+    private Long id;
     @JsonProperty
     private String country;
     @JsonProperty

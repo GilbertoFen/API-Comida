@@ -6,6 +6,7 @@ import com.demoapi.apicomida.models.FoodModel;
 public class FoodMapper {
     public static FoodModel toModel(FoodDTO foodDTO) {
         return FoodModel.builder()
+                .id(foodDTO.getId())
                 .country(foodDTO.getCountry())
                 .category(foodDTO.getCategory())
                 .name(foodDTO.getName())
@@ -22,6 +23,7 @@ public class FoodMapper {
 
     public static FoodDTO toDTO(FoodModel foodModel) {
         return FoodDTO.builder()
+                .id(foodModel.getId())
                 .country(foodModel.getCountry())
                 .category(foodModel.getCategory())
                 .name(foodModel.getName())

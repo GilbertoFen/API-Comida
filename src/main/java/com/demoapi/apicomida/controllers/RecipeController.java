@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-
+@CrossOrigin(origins = "http://localhost:63342")
 @RestController
 @RequestMapping("/api/recipes")
 public class RecipeController {
@@ -22,14 +22,15 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<?> createRecipe(@RequestBody @Valid CreateRecipeDTO recipeCreateDTO) {
-        ResponseEntity<?> recipeDTO = recipeService.createRecipe(recipeCreateDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(recipeDTO);
+        System.out.println("Datos recibidos: " + recipeCreateDTO);
+        return recipeService.createRecipe(recipeCreateDTO);
     }
+
     @GetMapping
     public ResponseEntity<List<RecipeDTO>> getAllRecipes() {
-        List<RecipeDTO> recipes = recipeService.getAllRecipes();
-        return ResponseEntity.ok(recipes);
+        return recipeService.getAllRecipes();
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<RecipeDTO> getRecipeById(@PathVariable Long id) {
