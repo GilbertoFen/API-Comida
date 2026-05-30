@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Rules"
+  short_description: "Guia para React con TypeScript"
+  default_prompt: "Use $react-rules para crear o modificar una aplicacion React con TypeScript siguiendo las reglas del proyecto."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spring Boot Best Practices"
+  short_description: "Layered Spring Boot Maven projects."
+  default_prompt: "Use $spring-boot-best-practices to create or modify a Spring Boot API or Spring Web monolith with Java 25, Maven, layered packages, DTO records, mappers, JPA repositories, and application.properties."
