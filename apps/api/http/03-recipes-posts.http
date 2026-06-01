@@ -1,0 +1,136 @@
+@baseUrl = http://localhost:8081
+@token = {{$global access_token}}
+@foodId = REEMPLAZAR_UUID_FOOD
+@recipeId = REEMPLAZAR_UUID_RECIPE
+@ingredientId = REEMPLAZAR_UUID_INGREDIENT
+@postId = REEMPLAZAR_UUID_POST
+
+### Crear receta
+POST {{baseUrl}}/recipes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Chicken Bowl",
+  "description": "Bowl alto en proteina",
+  "instructions": "Cocina el arroz y el pollo. Mezcla y sirve.",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 20,
+  "servings": 2,
+  "public": true,
+  "aiGenerated": false,
+  "highCalorie": false,
+  "highProtein": true,
+  "lowCarb": false
+}
+
+### Agregar ingrediente
+POST {{baseUrl}}/recipes/{{recipeId}}/ingredients
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "quantity": 200,
+  "unit": "g"
+}
+
+### Calcular nutricion
+POST {{baseUrl}}/recipes/{{recipeId}}/calculate-nutrition
+Authorization: Bearer {{token}}
+
+### Actualizar ingrediente
+PATCH {{baseUrl}}/recipes/{{recipeId}}/ingredients/{{ingredientId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "quantity": 250,
+  "unit": "g"
+}
+
+### Obtener recetas
+GET {{baseUrl}}/recipes
+Authorization: Bearer {{token}}
+
+### Obtener recetas publicas
+GET {{baseUrl}}/recipes/public
+Authorization: Bearer {{token}}
+
+### Obtener mis recetas
+GET {{baseUrl}}/recipes/me
+Authorization: Bearer {{token}}
+
+### Obtener receta por id
+GET {{baseUrl}}/recipes/{{recipeId}}
+Authorization: Bearer {{token}}
+
+### Actualizar receta
+PATCH {{baseUrl}}/recipes/{{recipeId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Chicken Bowl Plus",
+  "description": "Bowl actualizado",
+  "instructions": "Actualizado",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 15,
+  "servings": 2,
+  "public": true,
+  "aiGenerated": false,
+  "highCalorie": false,
+  "highProtein": true,
+  "lowCarb": false
+}
+
+### Crear publicacion de receta
+POST {{baseUrl}}/recipe-posts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "recipeId": "{{recipeId}}",
+  "title": "Mi chicken bowl",
+  "content": "Ideal para meal prep"
+}
+
+### Obtener publicaciones
+GET {{baseUrl}}/recipe-posts
+Authorization: Bearer {{token}}
+
+### Obtener publicacion por id
+GET {{baseUrl}}/recipe-posts/{{postId}}
+Authorization: Bearer {{token}}
+
+### Actualizar publicacion
+PATCH {{baseUrl}}/recipe-posts/{{postId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "recipeId": "{{recipeId}}",
+  "title": "Mi chicken bowl editado",
+  "content": "Contenido actualizado"
+}
+
+### Dar like
+POST {{baseUrl}}/recipe-posts/{{postId}}/like
+Authorization: Bearer {{token}}
+
+### Quitar like
+DELETE {{baseUrl}}/recipe-posts/{{postId}}/like
+Authorization: Bearer {{token}}
+
+### Eliminar publicacion
+DELETE {{baseUrl}}/recipe-posts/{{postId}}
+Authorization: Bearer {{token}}
+
+### Eliminar ingrediente
+DELETE {{baseUrl}}/recipes/{{recipeId}}/ingredients/{{ingredientId}}
+Authorization: Bearer {{token}}
+
+### Eliminar receta
+DELETE {{baseUrl}}/recipes/{{recipeId}}
+Authorization: Bearer {{token}}

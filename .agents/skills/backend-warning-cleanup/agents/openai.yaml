@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Warning Cleanup"
+  short_description: "Limpia warnings y ajustes menores Java"
+  default_prompt: "Use $backend-warning-cleanup para revisar y corregir warnings simples del backend Spring Boot sin cambiar la logica funcional."

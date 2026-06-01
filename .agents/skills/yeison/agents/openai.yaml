@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yeison Backend QA"
+  short_description: "Audita servicios y seguridad backend"
+  default_prompt: "Use $yeison para auditar servicios, validaciones, ownership y errores del backend Spring Boot."

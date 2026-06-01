@@ -1,13 +1,16 @@
 package com.demoapi.apicomida;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
-@SpringBootTest
 class ApiComidaApplicationTests {
 
     @Test
     void contextLoads() {
+        try (ConfigurableApplicationContext ignored = new SpringApplicationBuilder(ApiComidaApplication.class)
+                .properties("spring.main.web-application-type=none")
+                .run()) {
+        }
     }
-
 }

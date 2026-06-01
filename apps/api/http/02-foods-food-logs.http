@@ -1,0 +1,114 @@
+@baseUrl = http://localhost:8081
+@token = {{$global access_token}}
+@foodId = REEMPLAZAR_UUID_FOOD
+@foodLogId = REEMPLAZAR_UUID_FOOD_LOG
+
+### Listar alimentos
+GET {{baseUrl}}/foods
+Authorization: Bearer {{token}}
+
+### Crear alimento
+POST {{baseUrl}}/foods
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Greek Yogurt",
+  "brand": "Demo Brand",
+  "category": "Dairy",
+  "servingSize": 150,
+  "servingUnit": "g",
+  "caloriesPer100g": 120,
+  "proteinPer100g": 12,
+  "carbsPer100g": 8,
+  "fatPer100g": 4,
+  "fiberPer100g": 0,
+  "sugarPer100g": 7,
+  "sodiumPer100g": 55,
+  "barcode": "1234567890123",
+  "externalSource": "MANUAL"
+}
+
+### Buscar alimento
+GET {{baseUrl}}/foods/search?query=rice
+Authorization: Bearer {{token}}
+
+### Filtrar por categoria
+GET {{baseUrl}}/foods/category/Protein
+Authorization: Bearer {{token}}
+
+### Buscar por barcode
+GET {{baseUrl}}/foods/barcode/1234567890123
+Authorization: Bearer {{token}}
+
+### Obtener por id
+GET {{baseUrl}}/foods/{{foodId}}
+Authorization: Bearer {{token}}
+
+### Actualizar alimento
+PATCH {{baseUrl}}/foods/{{foodId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Greek Yogurt Light",
+  "brand": "Demo Brand",
+  "category": "Dairy",
+  "servingSize": 160,
+  "servingUnit": "g",
+  "caloriesPer100g": 110,
+  "proteinPer100g": 13,
+  "carbsPer100g": 7,
+  "fatPer100g": 2,
+  "fiberPer100g": 0,
+  "sugarPer100g": 6,
+  "sodiumPer100g": 50,
+  "barcode": "1234567890123",
+  "externalSource": "MANUAL"
+}
+
+### Crear food log
+POST {{baseUrl}}/food-logs
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "logDate": "2026-05-31",
+  "mealType": "breakfast",
+  "quantity": 1,
+  "unit": "serving"
+}
+
+### Logs por fecha
+GET {{baseUrl}}/food-logs?date=2026-05-31
+Authorization: Bearer {{token}}
+
+### Logs por rango
+GET {{baseUrl}}/food-logs/range?startDate=2026-05-01&endDate=2026-05-31
+Authorization: Bearer {{token}}
+
+### Resumen por fecha
+GET {{baseUrl}}/food-logs/summary?date=2026-05-31
+Authorization: Bearer {{token}}
+
+### Actualizar food log
+PATCH {{baseUrl}}/food-logs/{{foodLogId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "logDate": "2026-05-31",
+  "mealType": "snack",
+  "quantity": 2,
+  "unit": "servings"
+}
+
+### Eliminar food log
+DELETE {{baseUrl}}/food-logs/{{foodLogId}}
+Authorization: Bearer {{token}}
+
+### Eliminar alimento
+DELETE {{baseUrl}}/foods/{{foodId}}
+Authorization: Bearer {{token}}

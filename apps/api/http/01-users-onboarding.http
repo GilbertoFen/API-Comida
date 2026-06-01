@@ -1,0 +1,95 @@
+@baseUrl = http://localhost:8081
+@token = eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwianRpIjoiMjM4ZjA0ZjktYWJkOS00OTA5LTk4YzAtNTZiY2VmYWM2YzFmIiwic3ViIjoiMTJmMzJjZWEtY2ZlMC00NDg4LWI1NTUtMDU0MTE2NmM2M2NmIiwiaWF0IjoxNzgwMjkzNTg2LCJleHAiOjE3ODAyOTcxODYsImVtYWlsIjoiZGVtby5jb2RleEBhcHBmb29kc3ByaW5nLmxvY2FsIn0.UNwv-_ZSdIQ7wZn0ojAXcVk--Y5VKcxHaNTEEXnDK3Y
+
+### Obtener perfil
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+### Actualizar perfil
+PATCH {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Gil",
+  "lastName": "Dev",
+  "age": 29,
+  "gender": "male",
+  "weightKg": 78.5,
+  "heightCm": 178,
+  "activityLevel": "moderate",
+  "goal": "gain_muscle",
+  "targetWeightKg": 82,
+  "dailyCalorieGoal": 2800,
+  "dailyProteinGoal": 156,
+  "dailyCarbsGoal": 320,
+  "dailyFatGoal": 78
+}
+
+### Stats del usuario
+GET {{baseUrl}}/users/me/stats
+Authorization: Bearer {{token}}
+
+### Crear onboarding
+POST {{baseUrl}}/onboarding
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "mainGoal": "gain_muscle",
+  "currentWeightKg": 78.5,
+  "targetWeightKg": 82,
+  "heightCm": 178,
+  "age": 29,
+  "gender": "male",
+  "activityLevel": "moderate",
+  "trainingDaysPerWeek": 5,
+  "dietType": "balanced",
+  "foodRestrictions": "none",
+  "allergies": "none",
+  "preferredFoods": "pollo, arroz, aguacate",
+  "dislikedFoods": "ninguno",
+  "healthNotes": "sin notas"
+}
+
+### Obtener onboarding
+GET {{baseUrl}}/onboarding/me
+Authorization: Bearer {{token}}
+
+### Actualizar onboarding
+PATCH {{baseUrl}}/onboarding/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "mainGoal": "maintain_weight",
+  "currentWeightKg": 78.5,
+  "targetWeightKg": 79,
+  "heightCm": 178,
+  "age": 29,
+  "gender": "male",
+  "activityLevel": "active",
+  "trainingDaysPerWeek": 4,
+  "dietType": "balanced",
+  "foodRestrictions": "none",
+  "allergies": "none",
+  "preferredFoods": "fruta, pollo",
+  "dislikedFoods": "ninguno",
+  "healthNotes": "actualizado"
+}
+
+### Calcular metas
+POST {{baseUrl}}/onboarding/calculate-goals
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "weightKg": 78.5,
+  "targetWeightKg": 79,
+  "heightCm": 178,
+  "age": 29,
+  "gender": "male",
+  "activityLevel": "active",
+  "mainGoal": "maintain_weight"
+}
+

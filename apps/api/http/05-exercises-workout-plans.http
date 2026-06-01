@@ -1,0 +1,160 @@
+@baseUrl = http://localhost:8081
+@token = {{$global access_token}}
+@exerciseId = REEMPLAZAR_UUID_EXERCISE
+@workoutPlanId = REEMPLAZAR_UUID_WORKOUT_PLAN
+@workoutPlanDayId = REEMPLAZAR_UUID_WORKOUT_PLAN_DAY
+@workoutPlanExerciseId = REEMPLAZAR_UUID_WORKOUT_PLAN_EXERCISE
+
+### Listar ejercicios
+GET {{baseUrl}}/exercises
+Authorization: Bearer {{token}}
+
+### Crear ejercicio
+POST {{baseUrl}}/exercises
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Incline Dumbbell Press",
+  "muscleGroup": "chest",
+  "equipment": "dumbbells",
+  "difficulty": "intermediate",
+  "description": "Press inclinado con mancuernas",
+  "recommendedSets": 4,
+  "recommendedReps": "8-12",
+  "recommendedTimeSeconds": null
+}
+
+### Buscar ejercicio
+GET {{baseUrl}}/exercises/search?query=press
+Authorization: Bearer {{token}}
+
+### Filtrar por grupo muscular
+GET {{baseUrl}}/exercises/muscle-group/chest
+Authorization: Bearer {{token}}
+
+### Obtener ejercicio por id
+GET {{baseUrl}}/exercises/{{exerciseId}}
+Authorization: Bearer {{token}}
+
+### Actualizar ejercicio
+PATCH {{baseUrl}}/exercises/{{exerciseId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Incline Dumbbell Press",
+  "muscleGroup": "chest",
+  "equipment": "dumbbells",
+  "difficulty": "advanced",
+  "description": "Version ajustada",
+  "recommendedSets": 5,
+  "recommendedReps": "6-10",
+  "recommendedTimeSeconds": null
+}
+
+### Crear workout plan
+POST {{baseUrl}}/workout-plans
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Push Pull Legs",
+  "description": "Rutina base",
+  "goal": "gain_muscle",
+  "daysPerWeek": 5,
+  "aiGenerated": false
+}
+
+### Mis workout plans
+GET {{baseUrl}}/workout-plans/me
+Authorization: Bearer {{token}}
+
+### Obtener workout plan
+GET {{baseUrl}}/workout-plans/{{workoutPlanId}}
+Authorization: Bearer {{token}}
+
+### Actualizar workout plan
+PATCH {{baseUrl}}/workout-plans/{{workoutPlanId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Push Pull Legs v2",
+  "description": "Ajustada",
+  "goal": "gain_muscle",
+  "daysPerWeek": 6,
+  "aiGenerated": false
+}
+
+### Crear dia del workout plan
+POST {{baseUrl}}/workout-plans/{{workoutPlanId}}/days
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "dayNumber": 1,
+  "title": "Push",
+  "focusArea": "chest-shoulders-triceps"
+}
+
+### Obtener dias del workout plan
+GET {{baseUrl}}/workout-plans/{{workoutPlanId}}/days
+Authorization: Bearer {{token}}
+
+### Actualizar dia del workout plan
+PATCH {{baseUrl}}/workout-plan-days/{{workoutPlanDayId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "dayNumber": 1,
+  "title": "Push Heavy",
+  "focusArea": "chest-shoulders-triceps"
+}
+
+### Agregar ejercicio al workout plan
+POST {{baseUrl}}/workout-plan-days/{{workoutPlanDayId}}/exercises
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "exerciseId": "{{exerciseId}}",
+  "sets": 4,
+  "reps": "8-12",
+  "weightKg": 22.5,
+  "durationSeconds": null,
+  "restSeconds": 90,
+  "notes": "Primer ejercicio"
+}
+
+### Actualizar ejercicio del workout plan
+PATCH {{baseUrl}}/workout-plan-exercises/{{workoutPlanExerciseId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "exerciseId": "{{exerciseId}}",
+  "sets": 5,
+  "reps": "6-10",
+  "weightKg": 25,
+  "durationSeconds": null,
+  "restSeconds": 120,
+  "notes": "Carga progresiva"
+}
+
+### Eliminar ejercicio del workout plan
+DELETE {{baseUrl}}/workout-plan-exercises/{{workoutPlanExerciseId}}
+Authorization: Bearer {{token}}
+
+### Eliminar dia del workout plan
+DELETE {{baseUrl}}/workout-plan-days/{{workoutPlanDayId}}
+Authorization: Bearer {{token}}
+
+### Eliminar workout plan
+DELETE {{baseUrl}}/workout-plans/{{workoutPlanId}}
+Authorization: Bearer {{token}}
+
+### Eliminar ejercicio
+DELETE {{baseUrl}}/exercises/{{exerciseId}}
+Authorization: Bearer {{token}}

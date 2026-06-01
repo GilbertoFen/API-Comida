@@ -1,11 +1,10 @@
 package com.demoapi.apicomida.config;
 
-import com.demoapi.apicomida.models.FoodModel;
-import com.demoapi.apicomida.models.RecipeModel;
-import com.demoapi.apicomida.models.UserModel;
+import com.demoapi.apicomida.models.Exercise;
+import com.demoapi.apicomida.models.Food;
+import com.demoapi.apicomida.repositories.ExerciseRepository;
 import com.demoapi.apicomida.repositories.FoodRepository;
-import com.demoapi.apicomida.repositories.RecipeRepository;
-import com.demoapi.apicomida.repositories.UserRepository;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,81 +14,73 @@ import org.springframework.context.annotation.Configuration;
 public class DataSeeder {
 
     @Bean
-    CommandLineRunner seedDemoData(
-            UserRepository userRepository,
-            FoodRepository foodRepository,
-            RecipeRepository recipeRepository
-    ) {
+    CommandLineRunner seedCatalogs(FoodRepository foodRepository, ExerciseRepository exerciseRepository) {
         return args -> {
-            if (userRepository.count() > 0 || foodRepository.count() > 0) {
-                return;
+            if (foodRepository.count() == 0) {
+                foodRepository.saveAll(List.of(
+                        createFood("Chicken Breast", "Protein", "100", "g", "165", "31", "0", "3.6", "0", "0", "74", "seed"),
+                        createFood("Cooked Rice", "Carbohydrate", "100", "g", "130", "2.7", "28", "0.3", "0.4", "0.1", "1", "seed"),
+                        createFood("Avocado", "Fat", "100", "g", "160", "2", "9", "15", "7", "0.7", "7", "seed")
+                ));
             }
-
-            UserModel demoUser = new UserModel();
-            demoUser.setName("Demo User");
-            demoUser.setAge(28);
-            demoUser.setEmail("demo@appfoodspring.local");
-            demoUser.setPassword("demo123");
-            demoUser.setWeight(72.5f);
-            demoUser.setHeight(1.75f);
-            demoUser.setExerciseLevel(3);
-            demoUser = userRepository.save(demoUser);
-
-            FoodModel chicken = new FoodModel();
-            chicken.setCountry("Mexico");
-            chicken.setCategory("Protein");
-            chicken.setName("Chicken Breast");
-            chicken.setQuantity(100.0);
-            chicken.setUnit(1);
-            chicken.setCalories(165.0);
-            chicken.setProtein(31.0);
-            chicken.setCarb(0.0);
-            chicken.setFat(3.6);
-            chicken.setSugar(0.0);
-            chicken.setSodium(74.0);
-            chicken = foodRepository.save(chicken);
-
-            FoodModel rice = new FoodModel();
-            rice.setCountry("Mexico");
-            rice.setCategory("Carbohydrate");
-            rice.setName("Cooked Rice");
-            rice.setQuantity(100.0);
-            rice.setUnit(1);
-            rice.setCalories(130.0);
-            rice.setProtein(2.7);
-            rice.setCarb(28.0);
-            rice.setFat(0.3);
-            rice.setSugar(0.1);
-            rice.setSodium(1.0);
-            rice = foodRepository.save(rice);
-
-            FoodModel avocado = new FoodModel();
-            avocado.setCountry("Mexico");
-            avocado.setCategory("Fat");
-            avocado.setName("Avocado");
-            avocado.setQuantity(100.0);
-            avocado.setUnit(1);
-            avocado.setCalories(160.0);
-            avocado.setProtein(2.0);
-            avocado.setCarb(9.0);
-            avocado.setFat(15.0);
-            avocado.setSugar(0.7);
-            avocado.setSodium(7.0);
-            avocado = foodRepository.save(avocado);
-
-            RecipeModel chickenBowl = new RecipeModel();
-            chickenBowl.setName("Chicken Bowl");
-            chickenBowl.setDescription("Balanced bowl with chicken, rice and avocado.");
-            chickenBowl.setInstructions("Cook the rice, grill the chicken, slice the avocado and serve together.");
-            chickenBowl.setIdUser(demoUser);
-            chickenBowl.setIngredients(List.of(chicken, rice, avocado));
-            chickenBowl.setCalories(455.0);
-            chickenBowl.setProtein(35.7);
-            chickenBowl.setCarb(37.0);
-            chickenBowl.setFat(18.9);
-            chickenBowl.setSugar(0.8);
-            chickenBowl.setSodium(82.0);
-            recipeRepository.save(chickenBowl);
+            if (exerciseRepository.count() == 0) {
+                exerciseRepository.saveAll(List.of(
+                        createExercise("Push Up", "chest", "bodyweight", "beginner", 3, "12-15", null),
+                        createExercise("Squat", "legs", "bodyweight", "beginner", 4, "10-12", null),
+                        createExercise("Plank", "core", "bodyweight", "beginner", 3, "time", 45)
+                ));
+            }
         };
+    }
+
+    private Food createFood(
+            String name,
+            String category,
+            String servingSize,
+            String servingUnit,
+            String calories,
+            String protein,
+            String carbs,
+            String fat,
+            String fiber,
+            String sugar,
+            String sodium,
+            String source
+    ) {
+        Food food = new Food();
+        food.setName(name);
+        food.setCategory(category);
+        food.setServingSize(new BigDecimal(servingSize));
+        food.setServingUnit(servingUnit);
+        food.setCaloriesPer100g(new BigDecimal(calories));
+        food.setProteinPer100g(new BigDecimal(protein));
+        food.setCarbsPer100g(new BigDecimal(carbs));
+        food.setFatPer100g(new BigDecimal(fat));
+        food.setFiberPer100g(new BigDecimal(fiber));
+        food.setSugarPer100g(new BigDecimal(sugar));
+        food.setSodiumPer100g(new BigDecimal(sodium));
+        food.setExternalSource(source.toUpperCase());
+        food.setVerified(true);
+        return food;
+    }
+
+    private Exercise createExercise(
+            String name,
+            String muscleGroup,
+            String equipment,
+            String difficulty,
+            Integer recommendedSets,
+            String recommendedReps,
+            Integer recommendedTimeSeconds
+    ) {
+        Exercise exercise = new Exercise();
+        exercise.setName(name);
+        exercise.setMuscleGroup(muscleGroup);
+        exercise.setEquipment(equipment);
+        exercise.setDifficulty(difficulty);
+        exercise.setRecommendedSets(recommendedSets);
+        exercise.setRecommendedReps(recommendedReps);
+        exercise.setRecommendedTimeSeconds(recommendedTimeSeconds);
+        return exercise;
     }
 }

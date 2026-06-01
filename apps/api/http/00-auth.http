@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:8081
+@email = demo.codex@appfoodspring.local
+@password = StrongPass123!
+
+@accessToken = eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwianRpIjoiMjM4ZjA0ZjktYWJkOS00OTA5LTk4YzAtNTZiY2VmYWM2YzFmIiwic3ViIjoiMTJmMzJjZWEtY2ZlMC00NDg4LWI1NTUtMDU0MTE2NmM2M2NmIiwiaWF0IjoxNzgwMjkzNTg2LCJleHAiOjE3ODAyOTcxODYsImVtYWlsIjoiZGVtby5jb2RleEBhcHBmb29kc3ByaW5nLmxvY2FsIn0.UNwv-_ZSdIQ7wZn0ojAXcVk--Y5VKcxHaNTEEXnDK3Y
+
+@refreshToken = eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoicmVmcmVzaCIsImp0aSI6IjI0Y2JlMGQ4LTdhZTYtNGNiZC1hMjdhLWI0OTRhNTMzZDlmNSIsInN1YiI6IjEyZjMyY2VhLWNmZTAtNDQ4OC1iNTU1LTA1NDExNjZjNjNjZiIsImlhdCI6MTc4MDI5MzU4NiwiZXhwIjoxNzgwODk4Mzg2LCJlbWFpbCI6ImRlbW8uY29kZXhAYXBwZm9vZHNwcmluZy5sb2NhbCJ9.dki9h4FkrbfVmbK4ZGDer5YQUbFOfAQDMXkR7TnM4rY
+### Registrar usuario
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "firstName": "Demo",
+  "lastName": "Codex"
+}
+
+> {% client.global.set("access_token", response.body.accessToken); client.global.set("refresh_token", response.body.refreshToken); %}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("access_token", response.body.accessToken); client.global.set("refresh_token", response.body.refreshToken); %}
+
+### Refresh token
+POST {{baseUrl}}/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+### Perfil autenticado
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{access_token}}
+
+### Logout
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{access_token}}

@@ -1,0 +1,40 @@
+@baseUrl = http://localhost:8081
+@token = eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwianRpIjoiZmUwYjg4NTYtOWEyYS00OTIxLWIyNjMtYjQ4YTQ2ZGJiMWQ5Iiwic3ViIjoiMTJmMzJjZWEtY2ZlMC00NDg4LWI1NTUtMDU0MTE2NmM2M2NmIiwiaWF0IjoxNzgwMjk1OTkxLCJleHAiOjE3ODAyOTk1OTEsImVtYWlsIjoiZGVtby5jb2RleEBhcHBmb29kc3ByaW5nLmxvY2FsIn0.RsYI7CrY4co_4wm3o4rRWa68Mtl1PLe_Q0NGaBjSOIU
+@barcode = 3017624010701
+@foodId = REEMPLAZAR_UUID_FOOD
+
+### Buscar alimento local o externo por texto
+GET {{baseUrl}}/foods/search?query=Hersheys
+Authorization: Bearer {{token}}
+
+### Buscar por barcode con fallback a Open Food Facts
+GET {{baseUrl}}/foods/barcode/{{barcode}}
+Authorization: Bearer {{token}}
+
+### Crear alimento manual del usuario actual
+POST {{baseUrl}}/foods/custom
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Pollo preparado casero",
+  "brand": null,
+  "category": "Comida casera",
+  "servingSize": 100,
+  "servingUnit": "g",
+  "caloriesPer100g": 180,
+  "proteinPer100g": 25,
+  "carbsPer100g": 2,
+  "fatPer100g": 8,
+  "fiberPer100g": 0,
+  "sugarPer100g": 0,
+  "sodiumPer100g": 250
+}
+
+### Listar alimentos accesibles
+GET {{baseUrl}}/foods
+Authorization: Bearer {{token}}
+
+### Obtener alimento local por id
+GET {{baseUrl}}/foods/{{foodId}}
+Authorization: Bearer {{token}}

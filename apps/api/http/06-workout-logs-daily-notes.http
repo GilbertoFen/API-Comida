@@ -1,0 +1,133 @@
+@baseUrl = http://localhost:8081
+@token = {{$global access_token}}
+@exerciseId = REEMPLAZAR_UUID_EXERCISE
+@workoutPlanId = REEMPLAZAR_UUID_WORKOUT_PLAN
+@workoutLogId = REEMPLAZAR_UUID_WORKOUT_LOG
+@workoutLogExerciseId = REEMPLAZAR_UUID_WORKOUT_LOG_EXERCISE
+@dailyNoteId = REEMPLAZAR_UUID_DAILY_NOTE
+
+### Crear workout log
+POST {{baseUrl}}/workout-logs
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "workoutPlanId": "{{workoutPlanId}}",
+  "logDate": "2026-05-31",
+  "totalDurationMinutes": 75,
+  "userRating": 8,
+  "aiRating": 7,
+  "notes": "Buen entrenamiento"
+}
+
+### Workout logs por fecha
+GET {{baseUrl}}/workout-logs?date=2026-05-31
+Authorization: Bearer {{token}}
+
+### Workout logs por rango
+GET {{baseUrl}}/workout-logs/range?startDate=2026-05-01&endDate=2026-05-31
+Authorization: Bearer {{token}}
+
+### Resumen workout logs
+GET {{baseUrl}}/workout-logs/summary
+Authorization: Bearer {{token}}
+
+### Obtener workout log por id
+GET {{baseUrl}}/workout-logs/{{workoutLogId}}
+Authorization: Bearer {{token}}
+
+### Actualizar workout log
+PATCH {{baseUrl}}/workout-logs/{{workoutLogId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "workoutPlanId": "{{workoutPlanId}}",
+  "logDate": "2026-05-31",
+  "totalDurationMinutes": 80,
+  "userRating": 9,
+  "aiRating": 8,
+  "notes": "Ajustado"
+}
+
+### Agregar ejercicio ejecutado
+POST {{baseUrl}}/workout-logs/{{workoutLogId}}/exercises
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "exerciseId": "{{exerciseId}}",
+  "setsDone": 4,
+  "repsDone": "10-10-8-8",
+  "weightKg": 25,
+  "durationSeconds": null,
+  "aiRecommendedDurationSeconds": null,
+  "aiScore": 8,
+  "userNotes": "Se sintio bien"
+}
+
+### Actualizar ejercicio ejecutado
+PATCH {{baseUrl}}/workout-log-exercises/{{workoutLogExerciseId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "exerciseId": "{{exerciseId}}",
+  "setsDone": 5,
+  "repsDone": "10-10-9-8-8",
+  "weightKg": 27.5,
+  "durationSeconds": null,
+  "aiRecommendedDurationSeconds": null,
+  "aiScore": 9,
+  "userNotes": "Subio la carga"
+}
+
+### Crear nota diaria
+POST {{baseUrl}}/daily-notes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "noteDate": "2026-05-31",
+  "mood": "focused",
+  "energyLevel": 8,
+  "sleepHours": 7.5,
+  "content": "Buen dia de adherencia"
+}
+
+### Notas por fecha
+GET {{baseUrl}}/daily-notes?date=2026-05-31
+Authorization: Bearer {{token}}
+
+### Notas por rango
+GET {{baseUrl}}/daily-notes/range?startDate=2026-05-01&endDate=2026-05-31
+Authorization: Bearer {{token}}
+
+### Obtener nota por id
+GET {{baseUrl}}/daily-notes/{{dailyNoteId}}
+Authorization: Bearer {{token}}
+
+### Actualizar nota diaria
+PATCH {{baseUrl}}/daily-notes/{{dailyNoteId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "noteDate": "2026-05-31",
+  "mood": "tired",
+  "energyLevel": 6,
+  "sleepHours": 6.5,
+  "content": "Actualizada"
+}
+
+### Eliminar nota diaria
+DELETE {{baseUrl}}/daily-notes/{{dailyNoteId}}
+Authorization: Bearer {{token}}
+
+### Eliminar ejercicio de workout log
+DELETE {{baseUrl}}/workout-log-exercises/{{workoutLogExerciseId}}
+Authorization: Bearer {{token}}
+
+### Eliminar workout log
+DELETE {{baseUrl}}/workout-logs/{{workoutLogId}}
+Authorization: Bearer {{token}}

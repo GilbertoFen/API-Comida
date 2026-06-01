@@ -1,0 +1,162 @@
+@baseUrl = http://localhost:8081
+@token = {{$global access_token}}
+@mealPlanId = REEMPLAZAR_UUID_MEAL_PLAN
+@mealPlanDayId = REEMPLAZAR_UUID_MEAL_PLAN_DAY
+@mealPlanMealId = REEMPLAZAR_UUID_MEAL_PLAN_MEAL
+@foodId = REEMPLAZAR_UUID_FOOD
+@recipeId = REEMPLAZAR_UUID_RECIPE
+@fridgeItemId = REEMPLAZAR_UUID_FRIDGE_ITEM
+
+### Crear meal plan
+POST {{baseUrl}}/meal-plans
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Plan volumen",
+  "description": "Plan semanal manual",
+  "startDate": "2026-06-01",
+  "endDate": "2026-06-07",
+  "dailyCalorieTarget": 2800,
+  "aiGenerated": false
+}
+
+### Mis meal plans
+GET {{baseUrl}}/meal-plans/me
+Authorization: Bearer {{token}}
+
+### Obtener meal plan
+GET {{baseUrl}}/meal-plans/{{mealPlanId}}
+Authorization: Bearer {{token}}
+
+### Actualizar meal plan
+PATCH {{baseUrl}}/meal-plans/{{mealPlanId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Plan volumen editado",
+  "description": "Ajustado",
+  "startDate": "2026-06-01",
+  "endDate": "2026-06-07",
+  "dailyCalorieTarget": 2900,
+  "aiGenerated": false
+}
+
+### Crear dia del plan
+POST {{baseUrl}}/meal-plans/{{mealPlanId}}/days
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "dayNumber": 1,
+  "dayDate": "2026-06-01",
+  "totalCalories": 2500,
+  "totalProteinG": 170,
+  "totalCarbsG": 280,
+  "totalFatG": 70
+}
+
+### Listar dias del plan
+GET {{baseUrl}}/meal-plans/{{mealPlanId}}/days
+Authorization: Bearer {{token}}
+
+### Actualizar dia
+PATCH {{baseUrl}}/meal-plan-days/{{mealPlanDayId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "dayNumber": 1,
+  "dayDate": "2026-06-01",
+  "totalCalories": 2600,
+  "totalProteinG": 175,
+  "totalCarbsG": 290,
+  "totalFatG": 72
+}
+
+### Crear meal dentro del dia
+POST {{baseUrl}}/meal-plan-days/{{mealPlanDayId}}/meals
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "mealType": "lunch",
+  "recipeId": "{{recipeId}}",
+  "foodId": "{{foodId}}",
+  "quantity": 1,
+  "notes": "Meal principal",
+  "calories": 650,
+  "proteinG": 45,
+  "carbsG": 60,
+  "fatG": 18
+}
+
+### Actualizar meal
+PATCH {{baseUrl}}/meal-plan-meals/{{mealPlanMealId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "mealType": "dinner",
+  "recipeId": "{{recipeId}}",
+  "foodId": "{{foodId}}",
+  "quantity": 1,
+  "notes": "Actualizado",
+  "calories": 700,
+  "proteinG": 50,
+  "carbsG": 65,
+  "fatG": 20
+}
+
+### Analizar meal plan
+POST {{baseUrl}}/meal-plans/{{mealPlanId}}/analyze
+Authorization: Bearer {{token}}
+
+### Crear item del refri
+POST {{baseUrl}}/fridge/items
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "quantity": 3,
+  "unit": "pieces",
+  "expirationDate": "2026-06-10"
+}
+
+### Listar items del refri
+GET {{baseUrl}}/fridge/items
+Authorization: Bearer {{token}}
+
+### Actualizar item del refri
+PATCH {{baseUrl}}/fridge/items/{{fridgeItemId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "quantity": 4,
+  "unit": "pieces",
+  "expirationDate": "2026-06-12"
+}
+
+### Match recetas segun refri
+POST {{baseUrl}}/fridge/match-recipes
+Authorization: Bearer {{token}}
+
+### Eliminar item del refri
+DELETE {{baseUrl}}/fridge/items/{{fridgeItemId}}
+Authorization: Bearer {{token}}
+
+### Eliminar meal del plan
+DELETE {{baseUrl}}/meal-plan-meals/{{mealPlanMealId}}
+Authorization: Bearer {{token}}
+
+### Eliminar dia del plan
+DELETE {{baseUrl}}/meal-plan-days/{{mealPlanDayId}}
+Authorization: Bearer {{token}}
+
+### Eliminar meal plan
+DELETE {{baseUrl}}/meal-plans/{{mealPlanId}}
+Authorization: Bearer {{token}}

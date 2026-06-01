@@ -1,0 +1,73 @@
+@baseUrl = http://localhost:8081
+@token = {{$global access_token}}
+@aiRequestId = REEMPLAZAR_UUID_AI_REQUEST
+
+### Estimar calorias
+POST {{baseUrl}}/ai/estimate-calories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "prompt": "Comi dos huevos, una tortilla, medio aguacate y cafe."
+}
+
+### Generar meal plan
+POST {{baseUrl}}/ai/generate-meal-plan
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "input": {
+    "weightKg": 78.5,
+    "heightCm": 178,
+    "age": 29,
+    "goal": "gain_muscle",
+    "activityLevel": "moderate"
+  }
+}
+
+### Generar workout plan
+POST {{baseUrl}}/ai/generate-workout-plan
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "input": {
+    "goal": "gain_muscle",
+    "daysAvailable": 5,
+    "level": "intermediate",
+    "equipment": ["dumbbells", "bench"]
+  }
+}
+
+### Recomendar recetas
+POST {{baseUrl}}/ai/recommend-recipes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "input": {
+    "preferredFoods": ["pollo", "arroz"],
+    "restrictions": []
+  }
+}
+
+### Analizar progreso
+POST {{baseUrl}}/ai/analyze-progress
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "input": {
+    "period": "2026-05",
+    "notes": "Analiza cumplimiento general"
+  }
+}
+
+### Historial IA
+GET {{baseUrl}}/ai/history
+Authorization: Bearer {{token}}
+
+### Historial IA por id
+GET {{baseUrl}}/ai/history/{{aiRequestId}}
+Authorization: Bearer {{token}}

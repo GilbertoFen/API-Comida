@@ -1,118 +1,206 @@
 package com.demoapi.apicomida.services;
 
-import com.demoapi.apicomida.models.DTO.RecipeDTO.CreateRecipeDTO;
-import com.demoapi.apicomida.models.DTO.RecipeDTO.RecipeDTO;
-import com.demoapi.apicomida.models.FoodModel;
-import com.demoapi.apicomida.models.RecipeModel;
-import com.demoapi.apicomida.models.UserModel;
-import com.demoapi.apicomida.repositories.FoodRepository;
+import com.demoapi.apicomida.dtos.RecipeDtos.RecipeIngredientRequest;
+import com.demoapi.apicomida.dtos.RecipeDtos.RecipeIngredientResponse;
+import com.demoapi.apicomida.dtos.RecipeDtos.RecipeRequest;
+import com.demoapi.apicomida.dtos.RecipeDtos.RecipeResponse;
+import com.demoapi.apicomida.exception.ApiException;
+import com.demoapi.apicomida.models.Food;
+import com.demoapi.apicomida.models.Recipe;
+import com.demoapi.apicomida.models.RecipeIngredient;
+import com.demoapi.apicomida.models.UserAccount;
+import com.demoapi.apicomida.repositories.RecipeIngredientRepository;
 import com.demoapi.apicomida.repositories.RecipeRepository;
-import com.demoapi.apicomida.repositories.UserRepository;
-import com.demoapi.apicomida.util.Mappers.RecipeMapper;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RecipeService {
+
     private final RecipeRepository recipeRepository;
-    private final FoodRepository foodRepository;
-    private final UserRepository userRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
+    private final CurrentUserService currentUserService;
+    private final FoodService foodService;
 
     public RecipeService(
             RecipeRepository recipeRepository,
-            FoodRepository foodRepository,
-            UserRepository userRepository
+            RecipeIngredientRepository recipeIngredientRepository,
+            CurrentUserService currentUserService,
+            FoodService foodService
     ) {
         this.recipeRepository = recipeRepository;
-        this.foodRepository = foodRepository;
-        this.userRepository = userRepository;
+        this.recipeIngredientRepository = recipeIngredientRepository;
+        this.currentUserService = currentUserService;
+        this.foodService = foodService;
     }
 
-    public RecipeDTO createRecipe(CreateRecipeDTO recipeCreateDTO) {
-        UserModel user = userRepository.findById(recipeCreateDTO.getIdUser())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        List<FoodModel> ingredients = foodRepository.findAllById(recipeCreateDTO.getIngredientIds());
-        if (ingredients.size() != recipeCreateDTO.getIngredientIds().size()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more ingredients were not found");
-        }
-
-        RecipeModel recipeModel = RecipeMapper.toModel(recipeCreateDTO, ingredients);
-        recipeModel.setIdUser(user);
-        calculateRecipeNutrition(recipeModel);
-
-        return RecipeMapper.toDTO(recipeRepository.save(recipeModel));
+    @Transactional
+    public RecipeResponse create(RecipeRequest request) {
+        Recipe recipe = new Recipe();
+        recipe.setUser(currentUserService.requireCurrentUser());
+        apply(recipe, request);
+        return toResponse(recipeRepository.save(recipe));
     }
 
-    public List<RecipeDTO> getRecipes(String name) {
-        List<RecipeModel> recipes = (name == null || name.isBlank())
-                ? recipeRepository.findAll()
-                : recipeRepository.findByNameContainingIgnoreCase(name.trim());
-        return recipes.stream().map(RecipeMapper::toDTO).toList();
+    public List<RecipeResponse> getAll() {
+        return recipeRepository.findAll().stream().map(this::toResponse).toList();
     }
 
-    public RecipeDTO getRecipeById(Long id) {
-        RecipeModel recipeModel = recipeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found"));
-        return RecipeMapper.toDTO(recipeModel);
+    public RecipeResponse getById(UUID id) {
+        return toResponse(requireVisible(id));
     }
 
-    public RecipeDTO updateRecipe(Long id, CreateRecipeDTO recipeDTO) {
-        RecipeModel existingRecipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found"));
-
-        UserModel user = userRepository.findById(recipeDTO.getIdUser())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        List<FoodModel> ingredients = foodRepository.findAllById(recipeDTO.getIngredientIds());
-        if (ingredients.size() != recipeDTO.getIngredientIds().size()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more ingredients were not found");
-        }
-
-        existingRecipe.setName(recipeDTO.getName());
-        existingRecipe.setDescription(recipeDTO.getDescription());
-        existingRecipe.setInstructions(recipeDTO.getInstructions());
-        existingRecipe.setIngredients(ingredients);
-        existingRecipe.setIdUser(user);
-
-        calculateRecipeNutrition(existingRecipe);
-
-        return RecipeMapper.toDTO(recipeRepository.save(existingRecipe));
+    public List<RecipeResponse> getPublicRecipes() {
+        return recipeRepository.findByIsPublicTrueOrderByCreatedAtDesc().stream().map(this::toResponse).toList();
     }
 
-    public void deleteRecipe(Long id) {
-        if (!recipeRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found");
-        }
-        recipeRepository.deleteById(id);
+    public List<RecipeResponse> getMine() {
+        return recipeRepository.findByUserOrderByCreatedAtDesc(currentUserService.requireCurrentUser())
+                .stream().map(this::toResponse).toList();
     }
 
-    private void calculateRecipeNutrition(RecipeModel recipe) {
-        double totalCalories = 0.0;
-        double totalProtein = 0.0;
-        double totalCarb = 0.0;
-        double totalFat = 0.0;
-        double totalSugar = 0.0;
-        double totalSodium = 0.0;
+    @Transactional
+    public RecipeResponse update(UUID id, RecipeRequest request) {
+        Recipe recipe = requireOwned(id);
+        apply(recipe, request);
+        return toResponse(recipeRepository.save(recipe));
+    }
 
-        for (FoodModel ingredient : recipe.getIngredients()) {
-            double ingredientQuantity = ingredient.getQuantity() == null ? 0.0 : ingredient.getQuantity();
-            double quantity = ingredientQuantity / 100;
-            totalCalories += ingredient.getCalories() * quantity;
-            totalProtein += ingredient.getProtein() * quantity;
-            totalCarb += ingredient.getCarb() * quantity;
-            totalFat += ingredient.getFat() * quantity;
-            totalSugar += ingredient.getSugar() * quantity;
-            totalSodium += ingredient.getSodium() * quantity;
-        }
+    @Transactional
+    public void delete(UUID id) {
+        Recipe recipe = requireOwned(id);
+        recipeIngredientRepository.deleteByRecipe(recipe);
+        recipeRepository.delete(recipe);
+    }
 
-        recipe.setCalories(totalCalories);
-        recipe.setProtein(totalProtein);
-        recipe.setCarb(totalCarb);
-        recipe.setFat(totalFat);
-        recipe.setSugar(totalSugar);
-        recipe.setSodium(totalSodium);
+    @Transactional
+    public RecipeIngredientResponse addIngredient(UUID recipeId, RecipeIngredientRequest request) {
+        RecipeIngredient ingredient = new RecipeIngredient();
+        ingredient.setRecipe(requireOwned(recipeId));
+        applyIngredient(ingredient, request);
+        RecipeIngredient saved = recipeIngredientRepository.save(ingredient);
+        recalculate(saved.getRecipe());
+        return toIngredientResponse(saved);
+    }
+
+    @Transactional
+    public RecipeIngredientResponse updateIngredient(UUID recipeId, UUID ingredientId, RecipeIngredientRequest request) {
+        Recipe recipe = requireOwned(recipeId);
+        RecipeIngredient ingredient = recipeIngredientRepository.findByIdAndRecipe(ingredientId, recipe)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Recipe ingredient not found"));
+        applyIngredient(ingredient, request);
+        RecipeIngredient saved = recipeIngredientRepository.save(ingredient);
+        recalculate(recipe);
+        return toIngredientResponse(saved);
+    }
+
+    @Transactional
+    public void deleteIngredient(UUID recipeId, UUID ingredientId) {
+        Recipe recipe = requireOwned(recipeId);
+        RecipeIngredient ingredient = recipeIngredientRepository.findByIdAndRecipe(ingredientId, recipe)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Recipe ingredient not found"));
+        recipeIngredientRepository.delete(ingredient);
+        recalculate(recipe);
+    }
+
+    @Transactional
+    public RecipeResponse calculateNutrition(UUID recipeId) {
+        return toResponse(recalculate(requireOwned(recipeId)));
+    }
+
+    public Recipe requireOwned(UUID id) {
+        UserAccount user = currentUserService.requireCurrentUser();
+        return recipeRepository.findById(id)
+                .filter(recipe -> recipe.getUser() != null && recipe.getUser().getId().equals(user.getId()))
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Recipe not found"));
+    }
+
+    public Recipe requireVisible(UUID id) {
+        UserAccount user = currentUserService.requireCurrentUser();
+        return recipeRepository.findById(id)
+                .filter(recipe -> recipe.isPublic()
+                        || (recipe.getUser() != null && recipe.getUser().getId().equals(user.getId())))
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Recipe not found"));
+    }
+
+    private void apply(Recipe recipe, RecipeRequest request) {
+        recipe.setTitle(request.title());
+        recipe.setDescription(request.description());
+        recipe.setInstructions(request.instructions());
+        recipe.setPrepTimeMinutes(request.prepTimeMinutes());
+        recipe.setCookTimeMinutes(request.cookTimeMinutes());
+        recipe.setServings(request.servings());
+        recipe.setPublic(request.isPublic());
+        recipe.setAiGenerated(request.isAiGenerated());
+        recipe.setHighCalorie(request.isHighCalorie());
+        recipe.setHighProtein(request.isHighProtein());
+        recipe.setLowCarb(request.isLowCarb());
+    }
+
+    private void applyIngredient(RecipeIngredient ingredient, RecipeIngredientRequest request) {
+        Food food = foodService.requireAccessibleFood(request.foodId());
+        ingredient.setFood(food);
+        ingredient.setQuantity(request.quantity());
+        ingredient.setUnit(request.unit());
+        ingredient.setCalories(request.calories() != null ? request.calories() : food.getCaloriesPer100g());
+        ingredient.setProteinG(request.proteinG() != null ? request.proteinG() : food.getProteinPer100g());
+        ingredient.setCarbsG(request.carbsG() != null ? request.carbsG() : food.getCarbsPer100g());
+        ingredient.setFatG(request.fatG() != null ? request.fatG() : food.getFatPer100g());
+    }
+
+    private Recipe recalculate(Recipe recipe) {
+        List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipe(recipe);
+        recipe.setTotalCalories(sum(ingredients.stream().map(RecipeIngredient::getCalories).toList()));
+        recipe.setTotalProteinG(sum(ingredients.stream().map(RecipeIngredient::getProteinG).toList()));
+        recipe.setTotalCarbsG(sum(ingredients.stream().map(RecipeIngredient::getCarbsG).toList()));
+        recipe.setTotalFatG(sum(ingredients.stream().map(RecipeIngredient::getFatG).toList()));
+        return recipeRepository.save(recipe);
+    }
+
+    private RecipeResponse toResponse(Recipe recipe) {
+        List<RecipeIngredientResponse> ingredients = recipeIngredientRepository.findByRecipe(recipe)
+                .stream().map(this::toIngredientResponse).toList();
+        return new RecipeResponse(
+                recipe.getId(),
+                recipe.getUser() != null ? recipe.getUser().getId() : null,
+                recipe.getTitle(),
+                recipe.getDescription(),
+                recipe.getInstructions(),
+                recipe.getPrepTimeMinutes(),
+                recipe.getCookTimeMinutes(),
+                recipe.getServings(),
+                recipe.getTotalCalories(),
+                recipe.getTotalProteinG(),
+                recipe.getTotalCarbsG(),
+                recipe.getTotalFatG(),
+                recipe.isPublic(),
+                recipe.isAiGenerated(),
+                recipe.isHighCalorie(),
+                recipe.isHighProtein(),
+                recipe.isLowCarb(),
+                ingredients
+        );
+    }
+
+    private RecipeIngredientResponse toIngredientResponse(RecipeIngredient ingredient) {
+        return new RecipeIngredientResponse(
+                ingredient.getId(),
+                ingredient.getFood().getId(),
+                ingredient.getFood().getName(),
+                ingredient.getQuantity(),
+                ingredient.getUnit(),
+                ingredient.getCalories(),
+                ingredient.getProteinG(),
+                ingredient.getCarbsG(),
+                ingredient.getFatG()
+        );
+    }
+
+    private BigDecimal sum(List<BigDecimal> values) {
+        return values.stream().filter(java.util.Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

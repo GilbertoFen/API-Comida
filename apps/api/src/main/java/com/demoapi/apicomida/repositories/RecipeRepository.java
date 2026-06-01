@@ -1,11 +1,13 @@
 package com.demoapi.apicomida.repositories;
 
-import com.demoapi.apicomida.models.RecipeModel;
+import com.demoapi.apicomida.models.Recipe;
+import com.demoapi.apicomida.models.UserAccount;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface RecipeRepository extends JpaRepository<RecipeModel, Long> {
-    List<RecipeModel> findByNameContainingIgnoreCase(String name);
+public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
+    List<Recipe> findByUserOrderByCreatedAtDesc(UserAccount user);
+    List<Recipe> findByIsPublicTrueOrderByCreatedAtDesc();
+    List<Recipe> findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(String query);
 }
