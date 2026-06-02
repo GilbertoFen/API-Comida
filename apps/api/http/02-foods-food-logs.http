@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:8081
-@token = {{$global access_token}}
+@token = eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwianRpIjoiMjM4ZjA0ZjktYWJkOS00OTA5LTk4YzAtNTZiY2VmYWM2YzFmIiwic3ViIjoiMTJmMzJjZWEtY2ZlMC00NDg4LWI1NTUtMDU0MTE2NmM2M2NmIiwiaWF0IjoxNzgwMjkzNTg2LCJleHAiOjE3ODAyOTcxODYsImVtYWlsIjoiZGVtby5jb2RleEBhcHBmb29kc3ByaW5nLmxvY2FsIn0.UNwv-_ZSdIQ7wZn0ojAXcVk--Y5VKcxHaNTEEXnDK3Y
 @foodId = REEMPLAZAR_UUID_FOOD
 @foodLogId = REEMPLAZAR_UUID_FOOD_LOG
 
@@ -18,15 +18,15 @@ Content-Type: application/json
   "category": "Dairy",
   "servingSize": 150,
   "servingUnit": "g",
-  "caloriesPer100g": 120,
-  "proteinPer100g": 12,
-  "carbsPer100g": 8,
-  "fatPer100g": 4,
-  "fiberPer100g": 0,
-  "sugarPer100g": 7,
-  "sodiumPer100g": 55,
+  "calories": 120,
+  "proteinG": 12,
+  "carbsG": 8,
+  "fatG": 4,
+  "fiberG": 0,
+  "sugarG": 7,
+  "sodiumMg": 55,
   "barcode": "1234567890123",
-  "externalSource": "MANUAL"
+  "source": "manual"
 }
 
 ### Buscar alimento
@@ -56,15 +56,15 @@ Content-Type: application/json
   "category": "Dairy",
   "servingSize": 160,
   "servingUnit": "g",
-  "caloriesPer100g": 110,
-  "proteinPer100g": 13,
-  "carbsPer100g": 7,
-  "fatPer100g": 2,
-  "fiberPer100g": 0,
-  "sugarPer100g": 6,
-  "sodiumPer100g": 50,
+  "calories": 110,
+  "proteinG": 13,
+  "carbsG": 7,
+  "fatG": 2,
+  "fiberG": 0,
+  "sugarG": 6,
+  "sodiumMg": 50,
   "barcode": "1234567890123",
-  "externalSource": "MANUAL"
+  "source": "manual"
 }
 
 ### Crear food log
@@ -112,3 +112,4 @@ Authorization: Bearer {{token}}
 ### Eliminar alimento
 DELETE {{baseUrl}}/foods/{{foodId}}
 Authorization: Bearer {{token}}
+

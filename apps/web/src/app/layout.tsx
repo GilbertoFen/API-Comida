@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AppFoodSpring API Console",
-  description: "Consola simple en Next.js para probar los endpoints del backend Spring Boot.",
+  title: "AppFoodSpring",
+  description: "Health and fitness tracker conectado al backend Spring Boot de AppFoodSpring.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

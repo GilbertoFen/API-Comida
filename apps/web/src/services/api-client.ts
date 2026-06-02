@@ -3,8 +3,29 @@ import type { ApiExecutionRequest, ApiExecutionResult, AuthSession } from "@/typ
 export const DEFAULT_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8081";
 export const SESSION_STORAGE_KEY = "appfoodspring-api-session";
 
+export class ApiError extends Error {
+  status: number;
+  payload: unknown;
+
+  constructor(status: number, message: string, payload: unknown) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.payload = payload;
+  }
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isUser(value: unknown): value is NonNullable<AuthSession["user"]> {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.email === "string" &&
+    typeof value.isActive === "boolean"
+  );
 }
 
 export function normalizeBaseUrl(baseUrl: string): string {
@@ -44,6 +65,70 @@ async function parseResponse(response: Response): Promise<unknown> {
 
   const text = await response.text();
   return text ? text : null;
+}
+
+function toErrorMessage(payload: unknown, fallback: string): string {
+  if (typeof payload === "string" && payload.trim()) {
+    return payload;
+  }
+
+  if (isRecord(payload) && typeof payload.message === "string" && payload.message.trim()) {
+    return payload.message;
+  }
+
+  return fallback;
+}
+
+type RequestJsonOptions = {
+  path: string;
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  baseUrl?: string;
+  query?: Record<string, unknown>;
+  body?: unknown;
+  session?: AuthSession | null;
+  auth?: "public" | "jwt";
+};
+
+export async function requestJson<T>({
+  path,
+  method = "GET",
+  baseUrl = DEFAULT_API_URL,
+  query,
+  body,
+  session,
+  auth = "jwt",
+}: RequestJsonOptions): Promise<T> {
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
+  const url = new URL(path.replace(/^\//, ""), `${normalizedBaseUrl}/`);
+
+  Object.entries(cleanQuery(query)).forEach(([key, value]) => {
+    url.searchParams.set(key, value);
+  });
+
+  const headers = new Headers();
+  headers.set("Accept", "application/json, text/plain;q=0.9, */*;q=0.8");
+
+  if (body !== undefined) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  if (auth === "jwt" && session?.accessToken) {
+    headers.set("Authorization", `Bearer ${session.accessToken}`);
+  }
+
+  const response = await fetch(url.toString(), {
+    method,
+    headers,
+    body: body === undefined ? undefined : JSON.stringify(body),
+    cache: "no-store",
+  });
+
+  const payload = await parseResponse(response);
+  if (!response.ok) {
+    throw new ApiError(response.status, toErrorMessage(payload, `HTTP ${response.status}`), payload);
+  }
+
+  return payload as T;
 }
 
 export async function executeEndpoint(request: ApiExecutionRequest): Promise<ApiExecutionResult> {
@@ -106,7 +191,7 @@ export function extractSessionFromResponse(
   return {
     accessToken,
     refreshToken,
-    user: "user" in data ? data.user : currentSession?.user,
+    user: isUser(data.user) ? data.user : currentSession?.user,
   };
 }
 
@@ -133,7 +218,7 @@ export function getStoredSession(): AuthSession | null {
     return {
       accessToken: parsed.accessToken,
       refreshToken: parsed.refreshToken,
-      user: parsed.user,
+      user: isUser(parsed.user) ? parsed.user : null,
     };
   } catch {
     return null;

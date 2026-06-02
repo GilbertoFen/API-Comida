@@ -23,3 +23,19 @@ Estado actual:
 - El script `npm run dev --workspace web` arranca Next.js en `http://localhost:4001` y `npm run start --workspace web` conserva ese mismo puerto por defecto.
 - Si se ajustan puertos en el futuro, también se debe revisar `CorsConfig`, `README.md`, `apps/api/http/*.http` y cualquier default del cliente frontend.
 - Si se construyen pantallas temporales para probar endpoints desde Next, separar la lógica HTTP reutilizable del render de UI y reutilizar JWT en peticiones autenticadas.
+- La consola de pruebas de endpoints del frontend ya no debe vivir en `/`; la ruta prevista para conservarla es `apps/web/src/app/api-testv1/page.tsx`.
+- La UI de producto nueva se está concentrando en `apps/web/src/components/product/` con una estética health/fitness tipo self-quantification o life logging.
+- La paleta visual a respetar en esa capa es `#99D07B`, `#66B643`, `#4BAE1D`, `#BDE1A6` y `#D6EAC9`; mantener componentes homogéneos, claros, minimalistas y consistentes entre landing, home y onboarding.
+- El nombre vigente de la asistente IA en producto es `Nefir`; si aparecen referencias heredadas a `NIA` o dudas de naming, normalizarlas a `Nefir` en la UI.
+- La landing principal del producto debe vivir en `/`, el onboarding inicial en `/register`, el panel principal en `/home` y la consola técnica de endpoints queda preservada en `/api-testv1`.
+- La capa visual de `apps/web/src/components/product/` fue trabajada con la skill `ui-ux-pro-max`; si otro agente la modifica, respetar el mismo lenguaje visual, animaciones suaves left-to-right y estructura modular por pantalla.
+- `apps/web/src/components/product/backend.ts` funciona como bridge temporal entre UI y backend: reutiliza `services/api*`, persiste `baseUrl` en `appfoodspring-product-base-url` y evita duplicar fetches por pantalla.
+- Además del bridge temporal, el frontend ya tiene servicios reutilizables en `apps/web/src/services/` para `auth`, `user` y `home`; preferir extender esa capa antes de volver a escribir fetches directos.
+- En esta iteración Jonathan implementó la capa visual reutilizable para landing, `/home` y `/register`, además de navegación responsive, sidebar, tarjetas de resumen y onboarding conectado a backend.
+- La landing principal ya está montada desde `apps/web/src/app/page.tsx` usando `apps/web/src/components/product/landing-screen.tsx`.
+- `/home` consulta backend real usando la sesión JWT guardada: perfil (`/users/me`), foods (`/foods`), exercises (`/exercises`), recipe posts (`/recipe-posts`) y fridge (`/fridge/items`), además de sugerencias con `/fridge/match-recipes`.
+- `/home` también usa `/food-logs/summary`, `/foods/search` y `POST /food-logs` para la card nutricional diaria y el modal de registro de alimentos.
+- `/register` guarda onboarding real con `/onboarding` o `/onboarding/me`, calcula metas con `/onboarding/calculate-goals` y usa `/users/me` para sincronizar nombre/apellido del usuario.
+- Como `OnboardingService` marca `completedAt` en cada create/update, el borrador intermedio del cuestionario se persiste localmente en `appfoodspring-product-onboarding-draft`; el bloqueo de acceso a `/home` se valida contra backend y la finalización real se confirma al enviar el cuestionario.
+- Existen placeholders activos para rutas pedidas por producto pero aún no terminadas: `/plans`, `/meal-plan`, `/profile`, `/settings`, `/my-plan`, `/workouts` y `/progress`.
+- Si otro agente toca la capa `product`, no mover la lógica de bridge al árbol `services/` salvo que se haga una refactorización intencional del frontend completo.
